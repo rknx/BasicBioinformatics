@@ -1,13 +1,14 @@
 ---
 title: "Phylogenetic tree"
-teaching: 0
-exercises: 0
+teaching: 30
+exercises: 15
 questions:
-- "Key question (FIXME)"
+- How can we run other software and create an analyses pipeline in the script?
 objectives:
-- "First learning objective. (FIXME)"
+- Calling preinstalled software from the cluster computer
+- Run a genomic analyses pipeline. 
 keypoints:
-- "First key point. Brief Answer to questions. (FIXME)"
+- Don't forget to check parameters of the software. Can be viewed using '-h' followed by the software name. 
 ---
 
 ## Sequence alignment
@@ -58,6 +59,7 @@ in all the sample genomes used here as seen from blast results.
 However, aligning the sequence prior to phylogenetic reconstruction is always valuable.
 Now, we have an input file ready to use for a software that can run a 
 [maximum likelihood phylogentic analysis](https://www.ncbi.nlm.nih.gov/Class/NAWBIS/Modules/Phylogenetics/phylo15.html). 
+Read more about phylogenetic trees [here](https://www.nature.com/scitable/topicpage/reading-a-phylogenetic-tree-the-meaning-of-41956/). 
 
 ## Phylogenetic tree
 
@@ -72,7 +74,7 @@ the tree with the highest probability is shared.
 We will use [RAxML - Randomized Axelerated Maximum Likelihood](https://cme.h-its.org/exelixis/web/software/raxml/) tool to 
 construct the tree that we will submit through a batch file.
 
-The SLURM submission script is present in `/blue/general_workshop/share/scripts/slurm_tree.sh.sh
+The SLURM submission script is present in `/blue/general_workshop/share/scripts/slurm_tree.sh
 
 ~~~
 $ cp ../../share/scripts/slurm_tree.sh ./
@@ -96,11 +98,19 @@ echo 'ML tree output in RAxML_bestTree.avrBs2_tree'
 The argument `-n` allows us to name the output suffix. In our case, the output will
 be name `RAxML_bestTree.avrBs2_tree`.
 
+
 > ## Help with arguments
 > To understand what other arguments mean, you can check the help file `ml raxml; raxmlHPC -h`.
 {: .tips}
 
 Edit the email address in the SLURM submission script and submit the job.
+
+~~~
+$ nano slurm_tree.sh
+
+$ sbatch slurm_tree.sh
+~~~
+{: .language-bash}
 
 > ## Running bootstraps
 > To bootstrap the tree, add arguments `-b -#1000` 
@@ -147,7 +157,7 @@ For this, we will merge all the steps together into one script.
 
 Warning: *Chaining multiple steps is not always straightforward. 
 We have to be vigilant for what might change when the steps are automated and 
-intermediate  results are not evlauated.
+intermediate results are not evaluated.
 For example, we have to make sure that the genes of interest are actually in the genome. 
 Otherwise, the BLAST may output match to different closely related gene, 
 gene sequence alignment may add gaps and give us a wrong output and so on. 

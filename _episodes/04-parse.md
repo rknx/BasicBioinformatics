@@ -1,20 +1,23 @@
 ---
 title: "Parsing BLAST output"
-teaching: 20
+teaching: 30
 exercises: 15
 questions:
-- "Key question (FIXME)"
+- How can we modify files in UNIX?
 objectives:
-- "First learning objective. (FIXME)"
+- Modify file formats 
+- Running bash script
 keypoints:
-- "First key point. Brief Answer to questions. (FIXME)"
+- You can run bash command as a script in .sh file format. 
 ---
 
 ## File parsing
 
 In a bioinformatics project, it is common to use several programs in series
 i.e. output of a program is used as input to another program. 
-There are many standard data formats such as FASTA and BAM which are 
+There are many standard data formats such as 
+[FASTA](https://en.wikipedia.org/wiki/FASTA_format){: target="_blank"}, 
+[SAM and BAM](https://samtools.github.io/hts-specs/SAMv1.pdf){: target="_blank"} which are 
 commonly accepted by most programs. 
 This makes transition from one program to another program easier.
 Unfortunately, sometimes programs output non-standard or 
@@ -26,7 +29,7 @@ transformation for subsequent analysis.
 Note: While file parsing does not sound important, a bioinformatician has 
 to spend significant time correcting file formats.
 
-## Running BLASTn for phytogenetic tree
+## Running BLASTn for phylogenetic tree
 
 In next lesson, we will phylogenetically compare ‘avrBs2’ gene 
 from various strains of *Xanthomonas* species.
@@ -72,7 +75,7 @@ $ tail -n9 ../../share/scripts/slurm_blast_xml.sh
 for genome in `ls *.fasta | sed 's/.fasta//g'`
 do
   # Make database
-  makeblastdb -in "$genome.fasta" --dbtype nucl -out "$genome"
+  makeblastdb -in "$genome.fasta" -dbtype nucl -out "$genome"
 
   # Run blastn on that database
   blastn -query avrBs2.fas -db "$genome" -out $genome"_avrBs2.out" -𝗼𝘂𝘁𝗳𝗺𝘁 𝟱 -evalue 0.001
@@ -80,24 +83,20 @@ done
 ~~~
 {: .output}
 
-> This script has a new argument `-outfmt 5`. This will output the result in XML format.
+> This script has a new argument `-outfmt 5` for `blastn` command. This will output the result in XML format.
 > The `.out` files you generated in previous section is not in XML format.
 {: .notes}
 
 
 
-> ## Exercise: Transfering BLAST results in personal device
+> ## Exercise: Submit a job with BLAST script
 > 
-> The obejctive of this exercise is to be able to run SLURM script and transfer
-> output file to your own device.  
+> The obejctive of this exercise is to be able to run SLURM script  
 > You can use checklist to track progress.
-> 1. Copy script to your working directory (`phylogeny`). <input type="checkbox">
-> 2. Edit <email_address> with your own address in SLURM submission script. <input type="checkbox">
+> 1. Copy script `slurm_blast_xml.sh` to your working directory (`phylogeny`). <input type="checkbox">
+> 2. Edit email address in SLURM submission script. <input type="checkbox">
 > 3. Submit the SLURM script. <input type="checkbox">
 > 4. Make sure the all output files are present at the end of the job. <input type="checkbox">
-> 5. Connect to HiperGator storage with your SFTP application (We recommend Filezilla) <input type="checkbox">
-> 6. Transfer one of the output file (`.out` extension) to your personal computer. <input type="checkbox">
-> 7. Open the contents of the output file using a text editor. <input type="checkbox">
 > 
 > <details markdown="1">
 >   <summary></summary>
@@ -107,28 +106,17 @@ done
 > 
 > #2
 > $ nano slurm_blast_xml.sh
-> → edit email address → ctrl+x → y
+> → edit email address → ctrl+x → y → press enter
 > 
 > #3
 > $ sbatch slurm_blast_xml.sh
-> ~~~
-> {: .language-bash}
-> 
-> - After the job is done, there should be 20 output files with `.out` extension, one from each genome. 
 >
-> ~~~
 > #4
 > $ ls *_avrBs2.out | wc -l
 > ~~~
 > {: .language-bash}
-> 
-> ~~~
-> 20
-> ~~~
-> {: .output}
-> 
-> - The steps for connecting to Hipergator using Filezilla and 
-> transferring files are available in [setup page](/setup.html).
+>
+> The output of answer #4 should be 20 if everything went fine.  
 >
 > </details>
 {: .challenge}
@@ -143,8 +131,6 @@ will subsequently use to generate a phylogenetic tree.
 BLAST XML format includes a lot of information on query and database name, 
 sequence identity, statistics, alignments and so on.
 Below, you can see what BLAST XML output looks like:
-
-Note: The example below has been abridged.
 
 ~~~
 $ cat Xeu_avrBs2.out
@@ -199,7 +185,7 @@ AAGTGCTGGCAACGCGTCCAAACACCAGCAGGCCAGGCAGACCGAGACGGATTGA
 
 We will now use a bash script to parse the BLAST output to 
 extract the file as a multiFASTA file.
-THe script is located in path `/blue/general_workshop/share/scripts/blast2fasta.sh`
+The script is located in path `/blue/general_workshop/share/scripts/blast2fasta.sh`
 
 ~~~
 $ cp ../../share/scripts/blast2fasta.sh ./   
@@ -223,9 +209,7 @@ and look for (`grep`) keywords `BlastOutput_db` and `Hsp_hseq`.
 If it find the keywords, then it will extract (`sed`) the contents
 between those tags and output in appropriate format.
 
-> We won't cover the exact syntax of the script. 
-> This requires advanced knowledge of test command, ifelse shorthand, 
-> extended posix and here string.
+> Considering the course objective, we won't cover the exact syntax of the script at this time. 
 {: .tips}
 
 ### Running a bash script
